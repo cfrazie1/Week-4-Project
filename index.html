@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+
+    <style>
+    .icons{
+      width: 155px;
+      height: 30%;
+      border: 1px solid #ccc;
+      float: right;
+      margin: 5px;
+      padding: 10px;
+    }
+    .icons img{
+      height: 50%;
+      max-width: 90%;
+    }
+
+    #artwork{
+      width:830px;
+      height:800px;
+      border:1px solid #ccc
+    }
+    label {
+      font-size: 18px;
+    }
+
+    hr {
+      border-color: #ccc;
+      margin:40px 0 40px 0;
+    }
+
+    #myRow {
+      padding: 20px;
+      text-align: center;
+    }
+    #search_box {
+      padding: 5px;
+      width: 300px;
+    }
+    </style>
+    <script type="text/javascript">
+
+      function search() {
+
+        var searchValue = document.getElementById("search_box").value;
+        var searchUrl = "http://api.soundcloud.com/tracks.json?client_id=095fe1dcd09eb3d0e1d3d89c76f5618f&q=" + searchValue;
+        var html = "";
+
+        document.getElementById("artwork").innerHTML = "";
+
+        fetch(searchUrl).then(function(results) {
+          results.json().then(function(data) {
+            // data[0]
+            var count = (data.length < 10) ? data.length : 10;
+            var innerHtml = document.getElementById("artwork").innerHTML;
+            for(var i=0; i < count; i++) {
+              var myObj = data[i];
+
+              html += '<div class="icons" >';
+              html += '<img src="' + myObj.artwork_url + '" />'
+              html += '<br>';
+              html += '<h5>' + myObj.title + '</h5>';
+              html += '<h6>' + myObj.title + '</h6>';
+              html += '<input type="hidden" value="' + myObj.permalink_url + '" />';
+              html += '</div>';
+
+              document.getElementById("artwork").innerHTML = innerHtml + html;
+
+            }
+
+            var icons = document.getElementsByClassName("icons");
+
+            for (let i = 0; i < icons.length; i++){
+              let icon = icons[i];
+
+              icon.addEventListener("click", function(){
+                let  audioUrl = this.getElementsByTagName('input')[0].value;
+                document.getElementById("player").src = audioUrl;
+              });
+            }
+          });
+        });
+
+
+
+        return false;
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <div id="myRow" style="width:800px">
+      <h1>Really Awesome Music Site</h1>
+
+      <section class="player">
+        <audio class="music-player" controls="controls" id="player" src="" type="audio/mp3">
+      </section>
+      <hr />
+      <form onsubmit="return search()">
+        <label>search:</label>
+        <input type="text" value="" id="search_box" />
+        <input type="submit" value="submit" class="btn btn-primary" />
+      </form>
+
+      <hr />
+      <div id="artwork">
+
+      </div>
+    </div>
+  </body>
+</html>
